@@ -1,0 +1,77 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nueva Subasta</title>
+  <link rel="stylesheet" type="text/css" href="{% static 'auctions/styles.css' %}">
+</head>
+<body>
+
+  {% include './header.html' %}
+
+  <div class="container">
+    <h1>Crear Nueva Subasta</h1>
+
+    <form method="POST">
+      {% csrf_token %}
+
+      <div class="form-control">
+        <label for="title">Título:</label>
+        <input type="text" id="title" name="title" required placeholder="Título de la subasta">
+      </div>
+
+      <div class="form-control">
+        <label for="description">Descripción:</label>
+        <textarea id="description" name="description" required placeholder="Descripción de la subasta"></textarea>
+      </div>
+
+      <div class="form-control">
+        <label for="price">Precio:</label>
+        <input type="number" id="price" name="price" step="0.01" required placeholder="Precio de la subasta">
+      </div>
+
+      <div class="form-control">
+        <label for="discount_percentage">Descuento (%):</label>
+        <input type="number" id="discount_percentage" name="discount_percentage" step="0.01" placeholder="Descuento en porcentaje">
+      </div>
+
+      <div class="form-control">
+        <label for="rating">Valoración:</label>
+        <input type="number" id="rating" name="rating" step="0.1" min="0" max="5" placeholder="Valoración (0-5)">
+      </div>
+
+      <div class="form-control">
+        <label for="stock">Stock:</label>
+        <input type="number" id="stock" name="stock" required placeholder="Stock disponible">
+      </div>
+
+      <div class="form-control">
+        <label for="brand">Marca:</label>
+        <input type="text" id="brand" name="brand" placeholder="Marca del producto">
+      </div>
+
+      <div class="form-control">
+        <label for="category">Categoría:</label>
+        <input type="text" id="category" name="category" placeholder="Categoría del producto">
+      </div>
+
+      <div class="form-control">
+        <label for="thumbnail">Imagen (URL):</label>
+        <input type="url" id="thumbnail" name="thumbnail" placeholder="URL de la imagen">
+      </div>
+
+      <button type="submit">Crear Subasta</button>
+    </form>
+
+    <div class="buttons">
+      <a href="{% url 'index' %}" class="btn">Volver a la lista de subastas</a>
+    </div>
+  </div>
+
+  {% include './footer.html' %}
+
+</body>
+</html>

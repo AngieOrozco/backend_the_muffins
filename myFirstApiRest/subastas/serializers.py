@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Category, Auction 
 from django.utils import timezone 
 from .models import Bid
+from drf_spectacular.utils import extend_schema_field 
 
 class CategoryListCreateSerializer(serializers.ModelSerializer): 
     class Meta: 
@@ -23,6 +24,7 @@ class AuctionListCreateSerializer(serializers.ModelSerializer):
         model = Auction 
         fields = '__all__' 
 
+    @extend_schema_field(serializers.BooleanField()) 
     def get_isOpen(self, obj): 
         return obj.closing_date > timezone.now()
     
@@ -43,6 +45,7 @@ class AuctionDetailSerializer(serializers.ModelSerializer):
         model = Auction 
         fields = '__all__'
     
+    @extend_schema_field(serializers.BooleanField()) 
     def get_isOpen(self, obj): 
         return obj.closing_date > timezone.now() 
 

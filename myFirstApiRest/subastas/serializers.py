@@ -1,6 +1,7 @@
 from rest_framework import serializers 
 from .models import Category, Auction 
 from django.utils import timezone 
+from .models import Bid
 
 class CategoryListCreateSerializer(serializers.ModelSerializer): 
     class Meta: 
@@ -50,4 +51,19 @@ class AuctionDetailSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Closing date must be greater than now.") 
         return value 
 
+class BidSerializer(serializers.ModelSerializer):
+    timestamp = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ", read_only=True)
 
+    class Meta:
+        model = Bid
+        fields = '__all__'
+
+    def validate(self, data):
+        auction = data.get("auction")
+        amount = data.get("amount")
+
+        # Obtener la puja más alta actual
+        highest_bid = Bid.objects.filter(auction=auction).order_by('-amount').first()
+        if highest_bid and amount <= highest_bid.amount:
+            raise serializers.ValidationError("The bid must be higher than the current highest bid.")
+        return data

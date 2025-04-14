@@ -1,10 +1,13 @@
 from django.db import models
 from django.core.validators import MinValueValidator 
 from django.core.validators import MaxValueValidator 
+from django.utils import timezone 
+from django.contrib.auth.models import AbstractUser
+from django.db import models
 # Create your models here.
+from users.models import CustomUser 
 
-from django.db import models 
- 
+
 class Category(models.Model): 
     name = models.CharField(max_length=50, blank=False, unique=True) 
  
@@ -25,9 +28,13 @@ class Auction(models.Model):
     thumbnail = models.URLField() 
     creation_date = models.DateTimeField(auto_now_add=True)      
     closing_date = models.DateTimeField() 
+    auctioneer = models.ForeignKey(CustomUser, related_name='auctions', 
+    on_delete=models.CASCADE) 
  
     class Meta:  
         ordering=('id',)  
+    def __str__(self): 
+        return self.title 
 
 class Bid(models.Model):
     auction = models.ForeignKey(Auction, related_name='bids', on_delete=models.CASCADE)
@@ -43,6 +50,5 @@ class Bid(models.Model):
  
     def __str__(self): 
         return self.title 
-
 
 

@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (
     CategoryListCreate, CategoryRetrieveUpdateDestroy,
     AuctionListCreate, AuctionRetrieveUpdateDestroy,
-    BidListCreate, BidRetrieveUpdateDestroy
+    BidListCreate, BidRetrieveUpdateDestroy, UserAuctionListView 
 )
 
 app_name = "subastas"
@@ -19,4 +19,6 @@ urlpatterns = [
     # Pujas
     path('<int:auction_id>/pujas/', BidListCreate.as_view(), name='puja-list-create'),
     path('<int:auction_id>/pujas/<int:pk>/', BidRetrieveUpdateDestroy.as_view(), name='puja-detail'),
+
+    path('users/', UserAuctionListView.as_view(), name='action-from-users'), 
 ]

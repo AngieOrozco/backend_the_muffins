@@ -13,25 +13,37 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
         model = Category 
         fields = '__all__' 
 
-class AuctionListCreateSerializer(serializers.ModelSerializer): 
-    creation_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ", read_only=True) 
 
-    closing_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ") 
-     
+
+class AuctionListCreateSerializer(serializers.ModelSerializer): 
+    creation_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ", read_only=True)
+    closing_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ")
     isOpen = serializers.SerializerMethodField(read_only=True)
 
     class Meta: 
         model = Auction 
-        fields = '__all__' 
+        fields = '__all__'
 
-    @extend_schema_field(serializers.BooleanField()) 
+    @extend_schema_field(serializers.BooleanField())
     def get_isOpen(self, obj): 
         return obj.closing_date > timezone.now()
-    
+
     def validate_closing_date(self, value): 
-        if value <= timezone.now(): 
-            raise serializers.ValidationError("Closing date must be greater than now.") 
-        return value 
+        # Validar que la fecha de cierre sea mayor que la fecha actual
+        if value <= timezone.now():
+            raise serializers.ValidationError("Closing date must be greater than now.")
+        
+        # Obtener la fecha de creación; si no existe (al crear la subasta), usar timezone.now()
+        creation_date = self.instance.creation_date if self.instance else timezone.now()
+
+        # Validar que la diferencia entre las fechas sea de al menos 15 días
+        minimum_closing_date = creation_date + timezone.timedelta(days=15)
+        if value < minimum_closing_date:
+            raise serializers.ValidationError(
+                f"Closing date must be at least 15 days after the creation date (minimum: {minimum_closing_date})."
+            )
+        
+        return value
 
 class AuctionDetailSerializer(serializers.ModelSerializer): 
 

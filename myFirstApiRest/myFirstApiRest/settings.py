@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os 
+import dj_database_url 
+from dotenv import load_dotenv 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +28,7 @@ SECRET_KEY = "django-insecure-%xgd+77i1d9p=*d)521u2%)u3(&6yokzt1o@v3*9%ly!%!1is(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1"]
+ALLOWED_HOSTS = ["127.0.0.1", "@dpg-cvu55evgi27c73aed7mg-a.oregon-postgres.render.com"]
 
 
 # Application definition
@@ -78,13 +81,10 @@ WSGI_APPLICATION = "myFirstApiRest.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
-
+load_dotenv() 
+DATABASES = { 
+'default': dj_database_url.config(default=os.getenv("DATABASE_URL")) 
+} 
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -135,5 +135,7 @@ SPECTACULAR_SETTINGS = {
 } 
 
  
-CORS_ALLOWED_ORIGINS = ["http://127.0.0.1"] 
-CORS_ALLOW_CREDENTIALS = True 
+# CORS_ALLOWED_ORIGINS = ["http://127.0.0.1"] 
+# CORS_ALLOW_CREDENTIALS = True 
+
+CORS_ALLOW_ALL_ORIGINS = True

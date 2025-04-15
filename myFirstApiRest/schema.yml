@@ -4,9 +4,15 @@ info:
   version: 1.0.0
   description: Auctios web
 paths:
+<<<<<<< Updated upstream
   /api/auctions/:
     get:
       operationId: api_auctions_list
+=======
+  /api/subastas/:
+    get:
+      operationId: api_subastas_list
+>>>>>>> Stashed changes
       parameters:
       - name: page
         required: false
@@ -28,7 +34,11 @@ paths:
                 $ref: '#/components/schemas/PaginatedAuctionListCreateList'
           description: ''
     post:
+<<<<<<< Updated upstream
       operationId: api_auctions_create
+=======
+      operationId: api_subastas_create
+>>>>>>> Stashed changes
       tags:
       - api
       requestBody:
@@ -54,9 +64,200 @@ paths:
               schema:
                 $ref: '#/components/schemas/AuctionListCreate'
           description: ''
+<<<<<<< Updated upstream
   /api/auctions/{id}/:
     get:
       operationId: api_auctions_retrieve
+=======
+  /api/subastas/{auction_id}/pujas/:
+    get:
+      operationId: api_subastas_pujas_list
+      parameters:
+      - in: path
+        name: auction_id
+        schema:
+          type: integer
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBidList'
+          description: ''
+    post:
+      operationId: api_subastas_pujas_create
+      parameters:
+      - in: path
+        name: auction_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Bid'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Bid'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Bid'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bid'
+          description: ''
+  /api/subastas/{auction_id}/pujas/{id}/:
+    get:
+      operationId: api_subastas_pujas_retrieve
+      parameters:
+      - in: path
+        name: auction_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bid'
+          description: ''
+    put:
+      operationId: api_subastas_pujas_update
+      parameters:
+      - in: path
+        name: auction_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Bid'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Bid'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Bid'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bid'
+          description: ''
+    patch:
+      operationId: api_subastas_pujas_partial_update
+      parameters:
+      - in: path
+        name: auction_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedBid'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedBid'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedBid'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bid'
+          description: ''
+    delete:
+      operationId: api_subastas_pujas_destroy
+      parameters:
+      - in: path
+        name: auction_id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/subastas/{id}/:
+    get:
+      operationId: api_subastas_retrieve
+>>>>>>> Stashed changes
       parameters:
       - in: path
         name: id
@@ -77,7 +278,11 @@ paths:
                 $ref: '#/components/schemas/AuctionDetail'
           description: ''
     put:
+<<<<<<< Updated upstream
       operationId: api_auctions_update
+=======
+      operationId: api_subastas_update
+>>>>>>> Stashed changes
       parameters:
       - in: path
         name: id
@@ -110,7 +315,11 @@ paths:
                 $ref: '#/components/schemas/AuctionDetail'
           description: ''
     patch:
+<<<<<<< Updated upstream
       operationId: api_auctions_partial_update
+=======
+      operationId: api_subastas_partial_update
+>>>>>>> Stashed changes
       parameters:
       - in: path
         name: id
@@ -142,7 +351,11 @@ paths:
                 $ref: '#/components/schemas/AuctionDetail'
           description: ''
     delete:
+<<<<<<< Updated upstream
       operationId: api_auctions_destroy
+=======
+      operationId: api_subastas_destroy
+>>>>>>> Stashed changes
       parameters:
       - in: path
         name: id
@@ -158,9 +371,119 @@ paths:
       responses:
         '204':
           description: No response body
+<<<<<<< Updated upstream
   /api/auctions/categories/:
     get:
       operationId: api_auctions_categories_list
+=======
+  /api/subastas/categoria/{id}/:
+    get:
+      operationId: api_subastas_categoria_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryDetail'
+          description: ''
+    put:
+      operationId: api_subastas_categoria_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryDetail'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CategoryDetail'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CategoryDetail'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryDetail'
+          description: ''
+    patch:
+      operationId: api_subastas_categoria_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCategoryDetail'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCategoryDetail'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCategoryDetail'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryDetail'
+          description: ''
+    delete:
+      operationId: api_subastas_categoria_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/subastas/categorias/:
+    get:
+      operationId: api_subastas_categorias_list
+>>>>>>> Stashed changes
       parameters:
       - name: page
         required: false
@@ -182,7 +505,11 @@ paths:
                 $ref: '#/components/schemas/PaginatedCategoryListCreateList'
           description: ''
     post:
+<<<<<<< Updated upstream
       operationId: api_auctions_categories_create
+=======
+      operationId: api_subastas_categorias_create
+>>>>>>> Stashed changes
       tags:
       - api
       requestBody:

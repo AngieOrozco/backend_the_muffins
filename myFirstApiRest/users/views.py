@@ -12,7 +12,9 @@ from django.contrib.auth.password_validation import validate_password
 
 from rest_framework.views import APIView 
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser 
-
+from django.contrib.auth import authenticate
+from subastas.models import Auction, Bid
+from subastas.serializers import AuctionListCreateSerializer, BidSerializer
 
 class LogoutView(APIView): 
     permission_classes = [IsAuthenticated]
@@ -33,7 +35,22 @@ class LogoutView(APIView):
         except Exception as e: 
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST) 
         
+class LoginView(APIView):
+    permission_classes = [AllowAny]
 
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                'access': str(refresh.access_token),
+                'refresh': str(refresh),
+                'username': user.username
+            })
+        return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
 class UserRegisterView(generics.CreateAPIView): 
     permission_classes = [AllowAny]
@@ -102,3 +119,24 @@ class ChangePasswordView(APIView):
             return Response({"detail": "Password updated successfully."}) 
  
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class MisSubastasView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        subastas = Auction.objects.filter(auctioneer=request.user)
+        serializer = AuctionListCreateSerializer(subastas, many=True)
+        return Response(serializer.data)
+
+class MisPujasView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        pujas = Bid.objects.filter(bidder=request.user)
+        serializer = BidSerializer(pujas, many=True)
+        return Response(serializer.data)
+    
+def perform_create(self, serializer):
+    auction_id = self.kwargs['auction_id']
+    serializer.save(auction_id=auction_id, bidder=self.request.user)

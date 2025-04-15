@@ -23,7 +23,7 @@ class AuctionListCreateSerializer(serializers.ModelSerializer):
     class Meta: 
         model = Auction 
         fields = '__all__'
-
+        
     @extend_schema_field(serializers.BooleanField())
     def get_isOpen(self, obj): 
         return obj.closing_date > timezone.now()

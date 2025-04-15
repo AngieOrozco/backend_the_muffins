@@ -9,17 +9,25 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated 
 from rest_framework.response import Response
 from .permissions import IsOwnerOrAdmin 
-
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from users.permissions import IsAdminOrReadOnly, IsOwnerOrAdmin
 
 class CategoryListCreate(generics.ListCreateAPIView): 
+    permission_classes = [IsAdminOrReadOnly]
+
     queryset = Category.objects.all() 
     serializer_class = CategoryListCreateSerializer 
 
 class CategoryRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView): 
+    permission_classes = [IsAdminOrReadOnly]
+
     queryset = Category.objects.all() 
     serializer_class = CategoryDetailSerializer 
 
 class AuctionListCreate(generics.ListCreateAPIView): 
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
     queryset = Auction.objects.all() 
     serializer_class = AuctionListCreateSerializer 
 
@@ -84,6 +92,8 @@ class AuctionRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AuctionDetailSerializer
 
 class BidListCreate(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
     serializer_class = BidSerializer
 
     def get_queryset(self):

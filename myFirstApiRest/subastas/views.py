@@ -14,13 +14,13 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 from users.permissions import IsAdminOrReadOnly, IsOwnerOrAdmin
 
 class CategoryListCreate(generics.ListCreateAPIView): 
-    permission_classes = [IsAdminOrReadOnly]
+    #permission_classes = [IsAdminOrReadOnly]
 
     queryset = Category.objects.all() 
     serializer_class = CategoryListCreateSerializer 
 
 class CategoryRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView): 
-    permission_classes = [IsAdminOrReadOnly]
+    #permission_classes = [IsAdminOrReadOnly]
 
     queryset = Category.objects.all() 
     serializer_class = CategoryDetailSerializer 

@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-%xgd+77i1d9p=*d)521u2%)u3(&6yokzt1o@v3*9%ly!%!1is(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1"]
+#ALLOWED_HOSTS = ["127.0.0.1"]
 
 
 # Application definition
@@ -145,7 +145,9 @@ SPECTACULAR_SETTINGS = {
 CORS_ALLOW_ALL_ORIGINS = True 
 CORS_ALLOW_CREDENTIALS = True 
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0'] 
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '@dpg-cvvfpv24d50c739bmbd0-a.virginia-postgres.render.com', 'backend-the-muffins.onrender.com'] 
+
+
 
 
 SIMPLE_JWT = { 

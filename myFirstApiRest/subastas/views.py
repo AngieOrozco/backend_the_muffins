@@ -31,6 +31,10 @@ class AuctionListCreate(generics.ListCreateAPIView):
     queryset = Auction.objects.all() 
     serializer_class = AuctionListCreateSerializer 
 
+    def perform_create(self, serializer):
+        print("🚀 Usuario autenticado:", self.request.user)
+        serializer.save(auctioneer=self.request.user)
+
     def get_queryset(self): 
         queryset = Auction.objects.all() 
         params = self.request.query_params 
@@ -80,16 +84,20 @@ class AuctionListCreate(generics.ListCreateAPIView):
 
         # Aplicar los filtros de precios si están presentes
         if price_min:
-            queryset = queryset.filter(starting_price__gte=price_min)
+            queryset = queryset.filter(price__gte=price_min)
         if price_max:
-            queryset = queryset.filter(starting_price__lte=price_max)
+            queryset = queryset.filter(price__lte=price_max)
+
             
         return queryset 
 
 class AuctionRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView): 
-    permission_classes = [IsOwnerOrAdmin]  
+    #permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrAdmin]  
     queryset = Auction.objects.all() 
     serializer_class = AuctionDetailSerializer
+
+    def perform_update(self, serializer):
+        serializer.save(auctioneer=self.request.user)
 
 class BidListCreate(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
@@ -102,14 +110,20 @@ class BidListCreate(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         auction_id = self.kwargs['auction_id']
-        serializer.save(auction_id=auction_id)
+        serializer.save(auction_id=auction_id, bidder=self.request.user)
+
 
 class BidRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    #permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = BidSerializer
 
     def get_queryset(self):
         auction_id = self.kwargs['auction_id']
         return Bid.objects.filter(auction_id=auction_id)
+    
+    def perform_create(self, serializer):
+        auction_id = self.kwargs['auction_id']
+        serializer.save(auction_id=auction_id, bidder=self.request.user)
     
 class UserAuctionListView(APIView): 
     permission_classes = [IsAuthenticated] 

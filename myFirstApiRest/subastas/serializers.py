@@ -8,6 +8,7 @@ class CategoryListCreateSerializer(serializers.ModelSerializer):
     class Meta: 
         model = Category 
         fields = ['id','name'] 
+
 class CategoryDetailSerializer(serializers.ModelSerializer): 
     class Meta: 
         model = Category 
@@ -19,6 +20,7 @@ class AuctionListCreateSerializer(serializers.ModelSerializer):
     creation_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ", read_only=True)
     closing_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ")
     isOpen = serializers.SerializerMethodField(read_only=True)
+    auctioneer = serializers.ReadOnlyField(source='auctioneer.id') 
 
     class Meta: 
         model = Auction 
@@ -27,6 +29,7 @@ class AuctionListCreateSerializer(serializers.ModelSerializer):
     @extend_schema_field(serializers.BooleanField())
     def get_isOpen(self, obj): 
         return obj.closing_date > timezone.now()
+
 
     def validate_closing_date(self, value): 
         # Validar que la fecha de cierre sea mayor que la fecha actual
@@ -52,6 +55,7 @@ class AuctionDetailSerializer(serializers.ModelSerializer):
     closing_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ") 
 
     isOpen = serializers.SerializerMethodField(read_only=True) 
+    auctioneer = serializers.ReadOnlyField(source='auctioneer.id')
 
     class Meta: 
         model = Auction 
@@ -68,6 +72,8 @@ class AuctionDetailSerializer(serializers.ModelSerializer):
 
 class BidSerializer(serializers.ModelSerializer):
     timestamp = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ", read_only=True)
+    bidder = serializers.ReadOnlyField(source='bidder.id')
+    auction = serializers.ReadOnlyField(source='auction.id')
 
     class Meta:
         model = Bid

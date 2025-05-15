@@ -57,6 +57,7 @@ class AuctionDetailSerializer(serializers.ModelSerializer):
 
     isOpen = serializers.SerializerMethodField(read_only=True) 
     auctioneer = serializers.ReadOnlyField(source='auctioneer.id')
+    average_rating = serializers.SerializerMethodField()
 
     class Meta: 
         model = Auction 
@@ -70,6 +71,9 @@ class AuctionDetailSerializer(serializers.ModelSerializer):
         if value <= timezone.now(): 
             raise serializers.ValidationError("Closing date must be greater than now.") 
         return value 
+
+    def get_average_rating(self, obj):
+        return obj.average_rating()
 
 class BidSerializer(serializers.ModelSerializer):
     timestamp = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ", read_only=True)

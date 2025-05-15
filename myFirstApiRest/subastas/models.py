@@ -9,7 +9,6 @@ from users.models import CustomUser
 from django.db.models import Avg
 
 
-
 class Category(models.Model): 
     name = models.CharField(max_length=50, blank=False, unique=True) 
  
@@ -68,6 +67,17 @@ class Rating(models.Model):
 
     def __str__(self):
         return f"{self.user} → {self.auction} = {self.score}"
+
+class Comment(models.Model):
+    title = models.CharField(max_length=150)
+    body = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(CustomUser, related_name='comments', on_delete=models.CASCADE)
+    auction = models.ForeignKey('Auction', related_name='comments', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.title} - {self.user.username}"
 
 
 

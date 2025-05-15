@@ -14,6 +14,10 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 from users.permissions import IsAdminOrReadOnly, IsOwnerOrAdmin
 from .models import Rating
 from .serializers import RatingSerializer
+from rest_framework import generics, permissions
+from .models import Comment
+from .serializers import CommentSerializer
+
 
 class CategoryListCreate(generics.ListCreateAPIView): 
     permission_classes = [IsAdminOrReadOnly]
@@ -157,3 +161,23 @@ class RatingListCreateUpdateDeleteView(APIView):
     def delete(self, request, auction_id):
         Rating.objects.filter(user=request.user, auction_id=auction_id).delete()
         return Response({'detail': 'Rating deleted'}, status=204)
+
+
+class CommentListCreateView(generics.ListCreateAPIView):
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        auction_id = self.kwargs['auction_id']
+        return Comment.objects.filter(auction_id=auction_id).order_by('-created_at')
+
+    def perform_create(self, serializer):
+        auction_id = self.kwargs['auction_id']
+        serializer.save(user=self.request.user, auction_id=auction_id)
+
+class CommentUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Comment.objects.filter(user=self.request.user)

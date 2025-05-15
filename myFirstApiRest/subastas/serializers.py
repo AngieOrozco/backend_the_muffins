@@ -6,6 +6,7 @@ from drf_spectacular.utils import extend_schema_field
 from .models import Rating
 from .models import Comment
 
+
 class CategoryListCreateSerializer(serializers.ModelSerializer): 
     class Meta: 
         model = Category 
@@ -15,7 +16,6 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
     class Meta: 
         model = Category 
         fields = '__all__' 
-
 
 
 class AuctionListCreateSerializer(serializers.ModelSerializer): 
@@ -106,6 +106,8 @@ class RatingSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')
+    auction = serializers.ReadOnlyField(source='auction.id') 
+
 
     class Meta:
         model = Comment

@@ -20,7 +20,7 @@ from .serializers import CommentSerializer
 
 
 class CategoryListCreate(generics.ListCreateAPIView): 
-    permission_classes = [IsAdminOrReadOnly]
+    #permission_classes = [IsAdminOrReadOnly]
 
     queryset = Category.objects.all() 
     serializer_class = CategoryListCreateSerializer 
@@ -98,7 +98,7 @@ class AuctionListCreate(generics.ListCreateAPIView):
         return queryset 
 
 class AuctionRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView): 
-    #permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrAdmin]  
+    permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Auction.objects.all() 
     serializer_class = AuctionDetailSerializer
 
@@ -120,7 +120,7 @@ class BidListCreate(generics.ListCreateAPIView):
 
 
 class BidRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
-    #permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = BidSerializer
 
     def get_queryset(self):
@@ -154,18 +154,28 @@ class RatingListCreateUpdateDeleteView(APIView):
                 auction_id=auction_id,
                 defaults={'score': score}
             )
-            return Response(RatingSerializer(rating).data)
+            # 🟡 Aquí forzamos recalcular la media
+            auction = Auction.objects.get(id=auction_id)
+            new_avg = auction.average_rating()
+
+            return Response({
+                'score': rating.score,
+                'average_rating': new_avg
+            })
+
         except Exception as e:
             return Response({'detail': str(e)}, status=400)
+
 
     def delete(self, request, auction_id):
         Rating.objects.filter(user=request.user, auction_id=auction_id).delete()
         return Response({'detail': 'Rating deleted'}, status=204)
 
 
+
 class CommentListCreateView(generics.ListCreateAPIView):
     serializer_class = CommentSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
         auction_id = self.kwargs['auction_id']
@@ -177,7 +187,9 @@ class CommentListCreateView(generics.ListCreateAPIView):
 
 class CommentUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CommentSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        print("Usuario autenticado:", self.request.user)
         return Comment.objects.filter(user=self.request.user)
+

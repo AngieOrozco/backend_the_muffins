@@ -3,6 +3,9 @@ from .models import Category, Auction
 from django.utils import timezone 
 from .models import Bid
 from drf_spectacular.utils import extend_schema_field 
+from .models import Rating
+from .models import Comment
+
 
 class CategoryListCreateSerializer(serializers.ModelSerializer): 
     class Meta: 
@@ -13,7 +16,6 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
     class Meta: 
         model = Category 
         fields = '__all__' 
-
 
 
 class AuctionListCreateSerializer(serializers.ModelSerializer): 
@@ -56,6 +58,7 @@ class AuctionDetailSerializer(serializers.ModelSerializer):
 
     isOpen = serializers.SerializerMethodField(read_only=True) 
     auctioneer = serializers.ReadOnlyField(source='auctioneer.id')
+    average_rating = serializers.SerializerMethodField()
 
     class Meta: 
         model = Auction 
@@ -69,6 +72,9 @@ class AuctionDetailSerializer(serializers.ModelSerializer):
         if value <= timezone.now(): 
             raise serializers.ValidationError("Closing date must be greater than now.") 
         return value 
+
+    def get_average_rating(self, obj):
+        return obj.average_rating()
 
 class BidSerializer(serializers.ModelSerializer):
     timestamp = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ", read_only=True)
@@ -88,3 +94,21 @@ class BidSerializer(serializers.ModelSerializer):
         if highest_bid and amount <= highest_bid.amount:
             raise serializers.ValidationError("The bid must be higher than the current highest bid.")
         return data
+
+
+class RatingSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source='user.id')
+    auction = serializers.ReadOnlyField(source='auction.id')
+
+    class Meta:
+        model = Rating
+        fields = '__all__'
+
+class CommentSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source='user.username')
+    auction = serializers.ReadOnlyField(source='auction.id') 
+
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'title', 'body', 'created_at', 'updated_at', 'user', 'auction']

@@ -12,9 +12,15 @@ from .permissions import IsOwnerOrAdmin
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from users.permissions import IsAdminOrReadOnly, IsOwnerOrAdmin
+from .models import Rating
+from .serializers import RatingSerializer
+from rest_framework import generics, permissions
+from .models import Comment
+from .serializers import CommentSerializer
+
 
 class CategoryListCreate(generics.ListCreateAPIView): 
-    permission_classes = [IsAdminOrReadOnly]
+    #permission_classes = [IsAdminOrReadOnly]
 
     queryset = Category.objects.all() 
     serializer_class = CategoryListCreateSerializer 
@@ -92,7 +98,7 @@ class AuctionListCreate(generics.ListCreateAPIView):
         return queryset 
 
 class AuctionRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView): 
-    #permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrAdmin]  
+    permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Auction.objects.all() 
     serializer_class = AuctionDetailSerializer
 
@@ -114,7 +120,7 @@ class BidListCreate(generics.ListCreateAPIView):
 
 
 class BidRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
-    #permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = BidSerializer
 
     def get_queryset(self):
@@ -132,3 +138,58 @@ class UserAuctionListView(APIView):
         user_auctions = Auction.objects.filter(auctioneer=request.user) 
         serializer = AuctionListCreateSerializer(user_auctions, many=True) 
         return Response(serializer.data) 
+
+
+class RatingListCreateUpdateDeleteView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, auction_id):
+        score = request.data.get('score')
+        if not score:
+            return Response({'detail': 'Score is required'}, status=400)
+        
+        try:
+            rating, created = Rating.objects.update_or_create(
+                user=request.user,
+                auction_id=auction_id,
+                defaults={'score': score}
+            )
+            # 🟡 Aquí forzamos recalcular la media
+            auction = Auction.objects.get(id=auction_id)
+            new_avg = auction.average_rating()
+
+            return Response({
+                'score': rating.score,
+                'average_rating': new_avg
+            })
+
+        except Exception as e:
+            return Response({'detail': str(e)}, status=400)
+
+
+    def delete(self, request, auction_id):
+        Rating.objects.filter(user=request.user, auction_id=auction_id).delete()
+        return Response({'detail': 'Rating deleted'}, status=204)
+
+
+
+class CommentListCreateView(generics.ListCreateAPIView):
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        auction_id = self.kwargs['auction_id']
+        return Comment.objects.filter(auction_id=auction_id).order_by('-created_at')
+
+    def perform_create(self, serializer):
+        auction_id = self.kwargs['auction_id']
+        serializer.save(user=self.request.user, auction_id=auction_id)
+
+class CommentUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        print("Usuario autenticado:", self.request.user)
+        return Comment.objects.filter(user=self.request.user)
+

@@ -6,6 +6,8 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 # Create your models here.
 from users.models import CustomUser 
+from django.db.models import Avg
+
 
 
 class Category(models.Model): 
@@ -33,8 +35,13 @@ class Auction(models.Model):
  
     class Meta:  
         ordering=('id',)  
+
     def __str__(self): 
         return self.title 
+    
+    def average_rating(self):
+        avg = self.ratings.aggregate(Avg('score'))['score__avg']
+        return round(avg, 2) if avg else 1
 
 class Bid(models.Model):
     auction = models.ForeignKey(Auction, related_name='bids', on_delete=models.CASCADE)
@@ -50,5 +57,17 @@ class Bid(models.Model):
  
     def __str__(self): 
         return self.title 
+
+
+class Rating(models.Model):
+    score = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+    user = models.ForeignKey(CustomUser, related_name='ratings', on_delete=models.CASCADE)
+    auction = models.ForeignKey(Auction, related_name='ratings', on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'auction')  # cada usuario puede valorar solo una vez
+
+    def __str__(self):
+        return f"{self.user} → {self.auction} = {self.score}"
 
 

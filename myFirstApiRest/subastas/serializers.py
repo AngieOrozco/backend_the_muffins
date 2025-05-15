@@ -3,6 +3,7 @@ from .models import Category, Auction
 from django.utils import timezone 
 from .models import Bid
 from drf_spectacular.utils import extend_schema_field 
+from .models import Rating
 
 class CategoryListCreateSerializer(serializers.ModelSerializer): 
     class Meta: 
@@ -49,6 +50,7 @@ class AuctionListCreateSerializer(serializers.ModelSerializer):
         return value
 
 class AuctionDetailSerializer(serializers.ModelSerializer): 
+    average_rating = serializers.SerializerMethodField()
 
     creation_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ", read_only=True) 
 
@@ -69,6 +71,9 @@ class AuctionDetailSerializer(serializers.ModelSerializer):
         if value <= timezone.now(): 
             raise serializers.ValidationError("Closing date must be greater than now.") 
         return value 
+    
+    def get_average_rating(self, obj):
+        return obj.average_rating()
 
 class BidSerializer(serializers.ModelSerializer):
     timestamp = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ", read_only=True)
@@ -88,3 +93,12 @@ class BidSerializer(serializers.ModelSerializer):
         if highest_bid and amount <= highest_bid.amount:
             raise serializers.ValidationError("The bid must be higher than the current highest bid.")
         return data
+    
+
+class RatingSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source='user.id')
+    auction = serializers.ReadOnlyField(source='auction.id')
+
+    class Meta:
+        model = Rating
+        fields = '__all__'

@@ -12,9 +12,11 @@ from .permissions import IsOwnerOrAdmin
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from users.permissions import IsAdminOrReadOnly, IsOwnerOrAdmin
+from .models import Rating
+from .serializers import RatingSerializer
 
 class CategoryListCreate(generics.ListCreateAPIView): 
-    permission_classes = [IsAdminOrReadOnly]
+    #permission_classes = [IsAdminOrReadOnly]
 
     queryset = Category.objects.all() 
     serializer_class = CategoryListCreateSerializer 
@@ -132,3 +134,27 @@ class UserAuctionListView(APIView):
         user_auctions = Auction.objects.filter(auctioneer=request.user) 
         serializer = AuctionListCreateSerializer(user_auctions, many=True) 
         return Response(serializer.data) 
+    
+
+
+class RatingListCreateUpdateDeleteView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, auction_id):
+        score = request.data.get('score')
+        if not score:
+            return Response({'detail': 'Score is required'}, status=400)
+        
+        try:
+            rating, created = Rating.objects.update_or_create(
+                user=request.user,
+                auction_id=auction_id,
+                defaults={'score': score}
+            )
+            return Response(RatingSerializer(rating).data)
+        except Exception as e:
+            return Response({'detail': str(e)}, status=400)
+
+    def delete(self, request, auction_id):
+        Rating.objects.filter(user=request.user, auction_id=auction_id).delete()
+        return Response({'detail': 'Rating deleted'}, status=204)

@@ -4,6 +4,7 @@ from django.utils import timezone
 from .models import Bid
 from drf_spectacular.utils import extend_schema_field 
 from .models import Rating
+from .models import Comment
 
 class CategoryListCreateSerializer(serializers.ModelSerializer): 
     class Meta: 
@@ -102,3 +103,10 @@ class RatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating
         fields = '__all__'
+
+class CommentSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source='user.username')
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'title', 'body', 'created_at', 'updated_at', 'user', 'auction']

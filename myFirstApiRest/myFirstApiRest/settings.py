@@ -147,7 +147,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True 
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '@dpg-cvvfpv24d50c739bmbd0-a.virginia-postgres.render.com', 
-                 'backend-the-muffins.onrender.com'] 
+                 'backend-the-muffins.onrender.com', '@dpg-d0jf0563jp1c739rprdg-a.virginia-postgres.render.com'] 
 
 
 
